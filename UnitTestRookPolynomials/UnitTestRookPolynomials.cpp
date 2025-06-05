@@ -55,6 +55,111 @@ namespace UnitTestRookPolynomials
 				Assert::AreEqual(expected[i], actual[i]);
 			}
 		}
+				
+		TEST_METHOD(TestEmptyInput)
+		{
+			stringstream fakeInput("");
+			streambuf* oldCin = cin.rdbuf(fakeInput.rdbuf());
+
+			vector<pair<int, int>> squares;
+			string input;
+			bool validInput = false;
+
+			getline(cin, input);
+			stringstream ss(input);
+			int x, y;
+
+			while (ss >> x >> y) {
+				squares.push_back({ x, y });
+				if (ss.peek() == ',') ss.ignore();
+			}
+
+			Assert::IsTrue(squares.empty());
+
+			cin.rdbuf(oldCin);
+		}
+
+		TEST_METHOD(TestInvalidCharacters)
+		{
+			stringstream fakeInput("a b, c d");
+			streambuf* oldCin = cin.rdbuf(fakeInput.rdbuf());
+
+			vector<pair<int, int>> squares;
+			string input;
+			bool validInput = true;
+
+			getline(cin, input);
+			stringstream ss(input);
+			int x, y;
+
+			while (ss >> x >> y) {
+				squares.push_back({ x, y });
+				if (ss.peek() == ',') ss.ignore();
+			}
+
+			Assert::IsTrue(squares.empty());
+
+			cin.rdbuf(oldCin);
+		}
+
+		TEST_METHOD(TestNegativeCoordinates)
+		{
+			stringstream fakeInput("-1 0, 0 -2");
+			streambuf* oldCin = cin.rdbuf(fakeInput.rdbuf());
+
+			vector<pair<int, int>> squares;
+			string input;
+			bool validInput = true;
+
+			getline(cin, input);
+			stringstream ss(input);
+			int x, y;
+
+			while (ss >> x >> y) {
+				squares.push_back({ x, y });
+				if (ss.peek() == ',') ss.ignore();
+			}
+
+			Assert::AreEqual(2, (int)squares.size());
+			Assert::AreEqual(-1, squares[0].first);
+			Assert::AreEqual(0, squares[0].second);
+			Assert::AreEqual(0, squares[1].first);
+			Assert::AreEqual(-2, squares[1].second);
+
+			cin.rdbuf(oldCin);
+		}
+
+		TEST_METHOD(TestNegativeMaxRooks)
+		{
+			stringstream fakeInput("-1");
+			streambuf* oldCin = cin.rdbuf(fakeInput.rdbuf());
+
+			int maxRooks;
+			cin >> maxRooks;
+						
+			if (maxRooks < 0) {
+				Assert::IsTrue(true);
+			}
+			else {				
+				Assert::IsTrue(false);
+			}
+
+			cin.rdbuf(oldCin);
+		}
+
+		TEST_METHOD(TestNonNumericMaxRooks)
+		{
+			stringstream fakeInput("abc");
+			streambuf* oldCin = cin.rdbuf(fakeInput.rdbuf());
+
+			int maxRooks;
+			cin >> maxRooks;
+
+			Assert::IsTrue(cin.fail());
+
+			cin.clear();
+			cin.rdbuf(oldCin);
+		}
 
 		TEST_METHOD(TestInvalidInputRecovery)
 		{
@@ -91,6 +196,8 @@ namespace UnitTestRookPolynomials
 			Assert::AreEqual(4, squares[1].second);
 
 			cin.rdbuf(oldCin);
+
+
 		}
 	};
 }
