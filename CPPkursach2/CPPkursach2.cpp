@@ -4,16 +4,17 @@
 #include <utility>
 #include <sstream>
 #include <string>
+#include <limits>
 
 using namespace std;
 
 class ChessBoard {
 private:
-    vector<pair<int, int>> validSquares;
-    int maxRow, maxCol; 
+    vector<pair<int, int>> validSquares; 
+    int maxRow, maxCol;
 
 public:
-    //конструктор принимает вектор валидных клеток
+
     ChessBoard(const vector<pair<int, int>>& squares) {
         validSquares = squares;
         maxRow = 0;
@@ -78,15 +79,32 @@ int main() {
     vector<pair<int, int>> squares;
     string input;
     cout << "Введите координаты клеток (например, 0 0, 0 1, 1 1): ";
-    getline(cin, input);
-    stringstream ss(input);
-    int x, y;
 
-    //чтение координат
-    while (ss >> x >> y) {
-        squares.push_back({ x, y });
-        if (ss.peek() == ',') {
-            ss.ignore();
+    while (true) {
+        getline(cin, input);
+        stringstream ss(input);
+        int x, y;
+        bool validInput = true;
+
+        //чтение координат
+        while (ss >> x >> y) {
+            squares.push_back({ x, y });
+            if (ss.peek() == ',') {
+                ss.ignore();
+            }
+        }
+
+        //проверка на ошибочный ввод
+        if (ss.fail() && !ss.eof()) {
+            validInput = false;
+        }
+
+        if (validInput) {
+            break;
+        }
+        else {
+            cout << "Некорректный ввод. Пожалуйста, введите координаты клеток заново: ";
+            squares.clear();
         }
     }
 
@@ -97,7 +115,7 @@ int main() {
     while (!(cin >> maxRooks) || maxRooks < 0) {
         cout << "Пожалуйста, введите корректное число: ";
         cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 
     vector<int> polynomial = chessBoard.rookPolynomial(maxRooks);
